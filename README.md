@@ -34,17 +34,21 @@ Similarity: cocine via L2-normalized dot product...**NEED TO BRUSH UP and put ma
 
 ## Metrics
 
-- Storage: 
+Storage: 
+
 1) Disk Stoager (MB): on-disk size of the embedding file
 2) Load time (ms): time to load/map embeddings
 
-- Latency: 
+Latency: 
+
 3) Query Latency (p50, p95 over 100 cosine searches): median & p95 per-query latency for 100 cosine 4 searches (L2-normalize then q @ M.T).
 
-- Quality:
+Quality:
+
 4) Recall is a retreival for each query; it checks the top-10 retrieved items and mark a “hit” if **any** shares the query’s label (`world`, `sports`, `business`, `sci_tech`). Recall@10 is the fraction of queries with a hit. (0–1 proportion; e.g., 0.93 = 93%)
 
-- Scale and Cost:
+Scale and Cost:
+
 5) Monthly cost USD: (size_mb / 1024) × COST_PER_GB_MONTH
 6) Annual cost USD: monthly_cost_usd × 12
 7) Savings vs fp32 used per month USD: (fp32_monthly − mode_monthly)
