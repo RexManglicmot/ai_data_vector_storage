@@ -1,0 +1,5 @@
+Resume:
+
+Benchmarked LLM embedding data storage with NumPy across fp32/fp16 and formats (NPZ/memmap) at 500→2000 docs; achieved ~50% disk reduction and −X% p95 latency in fp16 with ≥Y% agreement@10, projecting $Z/mo savings per GB; delivered scale-aware guidance for RAG storage defaults.
+
+“Compared LLM embedding data storage formats (fp32/fp16/NPZ/memmap) with NumPy; fp16 cut disk by ~50%, NPZ saved additional X%, memmap minimized load overhead; p95 unchanged, agreement@10 ≥ Y%; projected $ savings per GB/month.”
