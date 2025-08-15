@@ -2,7 +2,7 @@
 This project is currently being developed and improved with additional features and testing.
 
 ## Inspiration for this project
-In my path of exploring AI, majority of the content I read was based on prompt engineering, tuning, and the sort. Pure methods, to say the least. Those are cool and interesting and all, but I yearned for a different flavor. And as fate would have it, this project came to be because I watched an interesting video on YouTube on data storage by Pratik Mishra. 
+In my path of exploring AI, majority of the content I read was based on prompt engineering, tuning, and the sort. Pure methods, to say the least. Those are cool and interesting and all, but I yearned for a different flavor. And as fate would have it, this project came to be because I watched an interesting video on YouTube on data storage by Pratik Mishra.!(""")
 
 Data storage was a topic that never really crossed my mind when thinking about AI/LLMs and the sort, nor while in school or self-study. Thus, I wanted to do a project that help me understand concepts of storing data and I thought this project would be a great start stepping stone into the field. 
 
@@ -18,15 +18,15 @@ What makes this project so unique is that it does not invovle databases like Chr
 This project focuses on synthethic data. The actual data itself doesnt matter in terms of storage because the storage results depend on the
 **shape/precision** of the embedding matrix, not on document content
 
-- **3 Corpus size tiers:** `500`, `1000`, `2000` documents  
+**3 Corpus size tiers:** `500`, `1000`, `2000` documents  
   Embed up to the largest tier once, then slice for smaller tiers. This isolates the effect of index size on latency and cost.
 
-- **Schema:** a single CSV with columns  
+**Schema:** a single CSV with columns  
   - `id` — integer row identifier  
   - `text` — short “news-like” string  
   - `label` — one of `world`, `sports`, `business`, `sci_tech` (used only for Recall@10)
 
-- **Queries (fixed set):**  
+**Queries (fixed set):**  
   We sample **100 queries** from the **smallest tier** (the first 500 documents). The same 100 queries are used for every tier so that comparisons across sizes are fair. Each query is embedded once, then searched with cosine similarity against each corpus tier.
 
 
@@ -34,20 +34,20 @@ Similarity: cocine via L2-normalized dot product...**NEED TO BRUSH UP and put ma
 
 ## Metrics
 
-Storage: 
+**Storage:** 
 
 1) Disk Stoager (MB): on-disk size of the embedding file
 2) Load time (ms): time to load/map embeddings
 
-Latency: 
+**Latency:** 
 
 3) Query Latency (p50, p95 over 100 cosine searches): median & p95 per-query latency for 100 cosine 4 searches (L2-normalize then q @ M.T).
 
-Quality:
+**Quality:**
 
 4) Recall is a retreival for each query; it checks the top-10 retrieved items and mark a “hit” if **any** shares the query’s label (`world`, `sports`, `business`, `sci_tech`). Recall@10 is the fraction of queries with a hit. (0–1 proportion; e.g., 0.93 = 93%)
 
-Scale and Cost:
+**Scale and Cost:**
 
 5) Monthly cost USD: (size_mb / 1024) × COST_PER_GB_MONTH
 6) Annual cost USD: monthly_cost_usd × 12
@@ -91,7 +91,6 @@ Python · Numpy · Pandas · Matplotlib · sentence-transformers (MiniLM)
 
 
 ## Results
-
 
 
 ## Limitations
