@@ -15,26 +15,79 @@ Text, images, and other data modes are often vectorized to represent their seman
 What makes this project so unique is that it does not invovle databases like ChromaDB and MondgoDB. This was intentional because these databasesstore the same arrays behind an index, with their uniqueness stemming from retrieval optimizations rather than raw storage format. By removing the database component, this project isolates and measures the direct impact of storage formats themselves.
 
 ## Dataset
-This project focuses on synthethic data. The actual data itself doesnt matter in terms of storage. 
+This project focuses on synthethic data. The actual data itself doesnt matter in terms of storage because the storage results depend on the
+**shape/precision** of the embedding matrix, not on document content
+
+- **3 Corpus size tiers:** `500`, `1000`, `2000` documents  
+  Embed up to the largest tier once, then slice for smaller tiers. This isolates the effect of index size on latency and cost.
+
+- **Schema:** a single CSV with columns  
+  - `id` — integer row identifier  
+  - `text` — short “news-like” string  
+  - `label` — one of `world`, `sports`, `business`, `sci_tech` (used only for Recall@10)
+
+- **Queries (fixed set):**  
+  We sample **100 queries** from the **smallest tier** (the first 500 documents). The same 100 queries are used for every tier so that comparisons across sizes are fair. Each query is embedded once, then searched with cosine similarity against each corpus tier.
 
 
+Similarity: cocine via L2-normalized dot product...**NEED TO BRUSH UP and put materials in supplementary folder**
 
 ## Metrics
 
-Disk Stoager (MB): 
-Load time (ms):
-Query Latency (p50, p95 over 100 cosine searches):
-Monthly cost USD:
-Annual cost USD:
-Savings vs fp32 used per month USD:
+Storage: 
+1) Disk Stoager (MB): on-disk size of the embedding file
+2) Load time (ms): time to load/map embeddings
 
+Latency: 
+3) Query Latency (p50, p95 over 100 cosine searches): median & p95 per-query latency for 100 cosine 4 searches (L2-normalize then q @ M.T).
 
+Quality:
+4) Recall is a retreival for each query; it checks the top-10 retrieved items and mark a “hit” if **any** shares the query’s label (`world`, `sports`, `business`, `sci_tech`). Recall@10 is the fraction of queries with a hit. (0–1 proportion; e.g., 0.93 = 93%)
+
+Scale and Cost:
+5) Monthly cost USD: (size_mb / 1024) × COST_PER_GB_MONTH
+6) Annual cost USD: monthly_cost_usd × 12
+7) Savings vs fp32 used per month USD: (fp32_monthly − mode_monthly)
 
 ## Tech Stack
+Python
+Numpy
+Pandas
+Matplotlib
+sentence-transformers (MiniLM)
 
+## Project Architecture
+```text
 
-## Project Archetecture?
-
+├─ 01_prep.py → generate synthetic corpus (id, text, label) → write:
+|               • data/dataset.csv  (up to 2k docs)
+|               • data/queries.csv  (100 fixed from smallest tier)
+|
+├─ 02a_embed_save.py → embed with MiniLM (Sentence-Transformers)
+|    → save corpus/queries:
+|       • data/emb_fp32.npy     (float32)
+|       • data/emb_fp16.npy     (float16 cast of fp32)
+|       • data/q_fp32.npy       (queries fp32)
+|
+├─ 02b_storage_metrics.py → measure per-mode file size + np.load time
+|    → reports/storage_metrics.csv  (size_mb, load_ms, dim)
+|
+├─ 02cd_bench_latencies.py → for each tier n_docs ∈ {500,1000,2000}:
+|    • L2-normalize matrices & queries (cosine via dot)
+|    • time 100 searches → p50_ms / p95_ms
+|    • compute Recall@10 (label hit in Top-10)
+|    → reports/latency_both.csv
+|
+├─ 02e_merge_results.py → join storage + latency, add $:
+|    • monthly_cost_usd, annual_cost_usd
+|    • savings_vs_fp32_usd_month (per tier)
+|    → reports/results.csv  (final table)
+|
+└─ 03_plot.py (optional) → figures:
+     • size_mb vs n_docs
+     • p95_ms vs n_docs
+     → reports/figures/*.png
+```
 
 
 ## Results
@@ -46,5 +99,5 @@ Savings vs fp32 used per month USD:
 
 ## Midnight Focus
 
-## Night Steps
+## Next Steps
 A potential next project would to focus on storage with regards to different databases such as ChromaDB and MongDB, and how they not only store but retrieve data and/or vectors. 
