@@ -1,0 +1,36 @@
+Project Map — NumPy LLM Vector Storage (fp32 vs fp16)
+
+.
+├─ app/
+│  ├─ config.yaml                  # tiers, queries, model_id, $/GB-mo
+│  ├─ lib_utils.py                 # helpers: load_cfg, l2norm, bench_latency, recall_at_10, $ calc
+│  ├─ 01_prep.py                   # make synthetic corpus + 100 fixed queries (id,text,label)
+│  ├─ 02a_embed_save.py            # embed corpus/queries (MiniLM) → emb_fp32.npy, emb_fp16.npy, q_fp32.npy
+│  ├─ 02b_storage_metrics.py       # measure file size + np.load time per mode → storage_metrics.csv
+│  ├─ 02cd_bench_latencies.py      # per tier & mode: p50/p95 + Recall@10 → latency_both.csv
+│  ├─ 02e_merge_results.py         # join storage+latency, add $ columns → results.csv
+│  └─ 03_plot.py                   # (optional) plots: size vs n_docs, p95 vs n_docs
+│
+├─ data/
+│  ├─ dataset.csv                  # id,text,label (up to max tier)
+│  ├─ queries.csv                  # 100 fixed queries (from smallest tier)
+│  ├─ emb_fp32.npy                 # corpus embeddings (float32)
+│  ├─ emb_fp16.npy                 # corpus embeddings (float16 cast)
+│  └─ q_fp32.npy                   # query embeddings (float32)
+│
+├─ reports/
+│  ├─ storage_metrics.csv          # storage_mode, dim, size_mb, load_ms
+│  ├─ latency_both.csv             # storage_mode, n_docs, dim, p50_ms, p95_ms, recall_at_10
+│  ├─ results.csv                  # final joined table + $: monthly/annual, savings_vs_fp32
+│  └─ figures/
+│     ├─ size_vs_n_docs.png        # (optional)
+│     └─ p95_vs_n_docs.png         # (optional)
+│
+├─ tests_scripts/                  # (optional) quick smoke/unit tests
+│  ├─ test_lib_utils.py
+│  ├─ smoke_01_prep.py
+│  ├─ smoke_02a_embed_save.py
+│  ├─ smoke_02b_storage_metrics.py
+│  ├─ smoke_02cd_bench_latencies.py
+│  └─ smoke_02e_merge_results.py
+└─ requirements.txt                # numpy, pandas, pyyaml, matplotlib, tqdm, sentence-transformers

@@ -1,0 +1,12 @@
+# Corpus sizes to benchmark (docs per tier)
+n_docs_levels: [500, 1000, 2000]
+
+# Query settings
+n_queries: 100
+seed: 42
+
+# Embedding model (CPU-friendly MiniLM)
+model_id: sentence-transformers/all-MiniLM-L6-v2
+
+# Storage cost model (used to compute $ columns)
+cost_per_gb_month_usd: 0.10

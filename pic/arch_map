@@ -1,0 +1,39 @@
+Project Architecture (NumPy • LLM Embeddings • fp32 vs fp16)
+
+Benchmark Run
+|
+├─ 01_prep.py → generate synthetic corpus (id, text, label) → write:
+|               • data/dataset.csv  (up to 2k docs)
+|               • data/queries.csv  (100 fixed from smallest tier)
+|
+├─ 02a_embed_save.py → embed with MiniLM (Sentence-Transformers)
+|    → save corpus/queries:
+|       • data/emb_fp32.npy     (float32)
+|       • data/emb_fp16.npy     (float16 cast of fp32)
+|       • data/q_fp32.npy       (queries fp32)
+|
+├─ 02b_storage_metrics.py → measure per-mode file size + np.load time
+|    → reports/storage_metrics.csv  (size_mb, load_ms, dim)
+|
+├─ 02cd_bench_latencies.py → for each tier n_docs ∈ {500,1000,2000}:
+|    • L2-normalize matrices & queries (cosine via dot)
+|    • time 100 searches → p50_ms / p95_ms
+|    • compute Recall@10 (label hit in Top-10)
+|    → reports/latency_both.csv
+|
+├─ 02e_merge_results.py → join storage + latency, add $:
+|    • monthly_cost_usd, annual_cost_usd
+|    • savings_vs_fp32_usd_month (per tier)
+|    → reports/results.csv  (final table)
+|
+└─ 03_plot.py (optional) → figures:
+     • size_mb vs n_docs
+     • p95_ms vs n_docs
+     → reports/figures/*.png
+
+
+Metrics (reported in results.csv)
+• Storage/IO: size_mb (MB), load_ms (ms)
+• Latency: p50_ms (ms), p95_ms (ms) over 100 queries
+• Quality: Recall@10 (0–1 proportion; e.g., 0.93 = 93%)
+• Cost: monthly_cost_usd, annual_cost_usd, savings_vs_fp32_usd_month
